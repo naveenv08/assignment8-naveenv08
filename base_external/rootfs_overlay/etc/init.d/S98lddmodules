@@ -1,0 +1,63 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "Loading LDD modules"
+
+        #
+        # Load scull
+        #
+        modprobe scull
+
+        major=$(awk '$2=="scull" {print $1}' /proc/devices)
+
+        if [ -n "$major" ]; then
+            rm -f /dev/scull /dev/scull[0-3]
+            mknod /dev/scull0 c $major 0
+            mknod /dev/scull1 c $major 1
+            mknod /dev/scull2 c $major 2
+            mknod /dev/scull3 c $major 3
+            ln -sf scull0 /dev/scull
+        fi
+
+        #
+        # Load faulty
+        #
+        modprobe faulty
+
+	major=$(awk '$2=="faulty" {print $1}' /proc/devices)
+
+	if [ -n "$major" ]; then
+    	rm -f /dev/faulty
+    	mknod /dev/faulty c $major 0
+	fi
+
+        #
+        # Load hello
+        #
+        modprobe hello
+        ;;
+
+    stop)
+        echo "Unloading LDD modules"
+
+        rmmod hello
+        rmmod faulty
+        rmmod scull
+
+	rm -f /dev/faulty
+        rm -f /dev/scull /dev/scull[0-3]
+        ;;
+
+    restart)
+        $0 stop
+        $0 start
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
