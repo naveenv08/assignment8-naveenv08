@@ -36,10 +36,25 @@ case "$1" in
         # Load hello
         #
         modprobe hello
+
+	#
+	# Load aesdchar
+	#
+	modprobe aesdchar
+
+	major=$(awk '$2=="aesdchar" {print $1}' /proc/devices)
+
+	if [ -n "$major" ]; then
+		rm -f /dev/aesdchar
+    		mknod /dev/aesdchar c $major 0
+	fi
         ;;
 
     stop)
         echo "Unloading LDD modules"
+
+	rmmod aesdchar
+    	rm -f /dev/aesdchar
 
         rmmod hello
         rmmod faulty
