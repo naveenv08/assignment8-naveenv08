@@ -46,9 +46,9 @@ define AESD_ASSIGNMENTS_INSTALL_TARGET_CMDS
 
 	
 	# Install kernel module
-        $(INSTALL) -D -m 0644 \
-                $(@D)/aesd-char-driver/aesdchar.ko \
-                $(TARGET_DIR)/lib/modules/aesdchar.ko
+	$(INSTALL) -D -m 0644 \
+        $(@D)/aesd-char-driver/aesdchar.ko \
+        $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/aesdchar.ko
 
         # Install helper scripts
         $(INSTALL) -m 0755 \
